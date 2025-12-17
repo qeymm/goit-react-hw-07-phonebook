@@ -30,14 +30,3 @@
 .submitBtn:hover {
   background: #edd6ad;
 }
-
-/* // ContactForm.propTypes = {
-//   addContact: PropTypes.func.isRequired,
-//   contacts: PropTypes.arrayOf(
-//     PropTypes.shape({
-//       id: PropTypes.string.isRequired,
-//       name: PropTypes.string.isRequired,
-//       number: PropTypes.string.isRequired,
-//     })
-//   ),
-// }; */

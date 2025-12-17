@@ -1,47 +1,51 @@
+import { ContactListItem } from '../ContactListItem/ContactListItem';
+import { Loader } from '../Loader';
 import { useEffect } from 'react';
-import { ContactListItem } from 'components/ContactListItem/ContactListItem';
-import { useSelector, useDispatch } from 'react-redux';
-import { getContacts, getFilter, getIsLoading, getError } from '../../redux/selectors';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  selectFilteredContacts,
+  selectError,
+  selectIsLoading,
+} from '../../redux/selectors';
 import { fetchContacts } from '../../redux/operations';
-
-const getFilteredContacts = (contacts, filter) => {
-  return contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
-};
+import css from './ContactList.module.css';
 
 export const ContactList = () => {
+  const filteredContacts = useSelector(selectFilteredContacts);
+  const error = useSelector(selectError);
+  const isLoading = useSelector(selectIsLoading);
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
-  const isLoading = useSelector(getIsLoading);
-  const error = useSelector(getError);
 
   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
-  const filteredContacts = getFilteredContacts(contacts, filter);
-
   return (
     <>
-      {isLoading && <p>Loading contacts...</p>}
-      {error && <p>Error: {error}</p>}
-      {!isLoading && !error && (
-        <ul>
-          {filteredContacts.map(filteredContact => (
+      <ul className={css.status}>
+        {/* If loading and not error, show Loader */}
+        {isLoading && !error && (
+          <li className={css.loaderRow}>
+            <Loader />
+          </li>
+        )}
+
+        {/* If not loading, not error, and filtered contacts is empty, show warning */}
+        {!isLoading && !error && filteredContacts.length === 0 && (
+          <p>No contacts found.</p>
+        )}
+
+        {/* If not loading, not error and have atleast 1 fitlered contact, show ContactListItem component */}
+        {!isLoading &&
+          !error &&
+          filteredContacts.length > 0 &&
+          filteredContacts.map(filteredContact => (
             <ContactListItem
               key={filteredContact.id}
               filteredContact={filteredContact}
             />
           ))}
-        </ul>
-      )}
+      </ul>
     </>
   );
 };
-
-// ContactList.propTypes = {
-//   filterContact: PropTypes.func.isRequired,
-//   deleteContact: PropTypes.func.isRequired,
-// };

@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import style from './ContactForm.module.css';
+import css from './ContactForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from '../../redux/operations';
-import { getContacts } from '../../redux/selectors';
+import { selectContacts } from '../../redux/selectors';
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
 
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
@@ -22,10 +22,12 @@ export const ContactForm = () => {
   const handleSubmit = e => {
     e.preventDefault();
 
+    // If name and number is empty it will not submit
     if (name.trim() === '' || number.trim() === '') {
       return;
     }
 
+    // If existing contact exist it will not submit
     const existingContact = contacts.find(
       contact => contact.name.toLowerCase() === name.toLowerCase()
     );
@@ -35,24 +37,27 @@ export const ContactForm = () => {
       return;
     }
 
-    dispatch(addContact({ name: name.trim(), number: number.trim() }));
+    // dispatch(addContact({ name: name, number: number }));
+    dispatch(addContact({ name, number }));
 
+    // Reset form
     setName('');
     setNumber('');
   };
 
   return (
     <>
-      <form className={style.form_container} onSubmit={handleSubmit}>
+      <form className={css.form_container} onSubmit={handleSubmit}>
         <label>
           <p>Name</p>
           <input
-            className={style.input}
+            className={css.input}
             type="text"
             name="name"
             pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan."
             required
+            // Should always be paired (value and onChange)
             value={name}
             onChange={handleNameChange}
           />
@@ -61,19 +66,20 @@ export const ContactForm = () => {
         <label>
           <p>Number</p>
           <input
-            className={style.input}
+            className={css.input}
             type="tel"
             name="number"
             pattern="\+?\d{1,4}?[\-.\s]?\(?\d{1,3}?\)?[\-.\s]?\d{1,4}[\-.\s]?\d{1,4}[\-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
+            // Should always be paired (value and onChange)
             value={number}
             onChange={handleNumberChange}
           />
         </label>
 
-        <button className={style.submitBtn} type="submit">
-          ADD CONTACT
+        <button className={css.submitBtn} type="submit">
+          Add Contact
         </button>
       </form>
     </>
